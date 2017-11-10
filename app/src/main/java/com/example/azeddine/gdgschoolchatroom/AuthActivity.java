@@ -44,7 +44,6 @@ public class AuthActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_auth);
 
         //get the firebase authentication instance
-        mAuth = FirebaseAuth.getInstance();
     }
 
     /**
@@ -83,21 +82,6 @@ public class AuthActivity extends AppCompatActivity implements
          * 2- sign in the user with email and password
          * 3- listen for the server response, if is it successful, start the chat activity, if it isn't display an error message
          */
-        if(validateCredentials(email,password)){
-        mAuth.signInWithEmailAndPassword(email,password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            startChatActivity();
-                        }else {
-                            Toast.makeText(AuthActivity.this, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-       }else {
-           Toast.makeText(AuthActivity.this, R.string.invalid_input, Toast.LENGTH_SHORT).show();
-       }
     }
 
 
@@ -130,25 +114,6 @@ public class AuthActivity extends AppCompatActivity implements
          * 2- create the user with mail and password
          * 3- listen for the server response, if is it successful, start the chat activity, if it isn't display an error message
          */
-        if(validateCredentials(email,password)){
-            //signing it the user with email and password
-            mAuth.createUserWithEmailAndPassword(email,password)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()) {
-                                mAuth.getCurrentUser().sendEmailVerification();
-                                startChatActivity();
-                                finish();
-                            }else {
-                                Toast.makeText(AuthActivity.this,task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-
-                    });
-        }else{
-            Toast.makeText(AuthActivity.this, R.string.invalid_input, Toast.LENGTH_SHORT).show();
-        }
     }
 
 
@@ -175,22 +140,6 @@ public class AuthActivity extends AppCompatActivity implements
      */
 
     private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "signInWithCredential:success");
-                            startChatActivity();
-                            finish();
-                        } else {
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-                                Toast.makeText(AuthActivity.this, "Invalid verification number", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-                });
     }
 
     @Override
@@ -203,44 +152,5 @@ public class AuthActivity extends AppCompatActivity implements
 
     @Override
     public void OnPhoneNumberSubmitted(String phoneNumber) {
-        //getting firebase phone auth provider instance
-        PhoneAuthProvider phoneAuthProvider = PhoneAuthProvider.getInstance();
-        //verifying phone number, using my personnel phone number, setting 1 minute as a time out for the second attempt
-        phoneAuthProvider.verifyPhoneNumber(
-                phoneNumber, // the phone number of the user
-                60,  // the time out
-                TimeUnit.SECONDS, // the time out unit
-                this,   // maneging the activity life cycle change
-                new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                    @Override
-                    public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
-                        //some devices, can detect automatically the sent pinCode
-                        signInWithPhoneAuthCredential(phoneAuthCredential);
-                    }
-
-                    @Override
-                    public void onVerificationFailed(FirebaseException e) {
-                        //something went wrong while submitting the pinCode
-                        Toast.makeText(AuthActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();;
-                    }
-
-                    @Override
-                    public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                        //the user received the pinCode
-                        super.onCodeSent(verificationId, forceResendingToken);
-                        //saving the verification Id to use later
-                        mPhoneVerificationId = verificationId;
-                        //stating the pinCode fragment
-                        PinCodeFragment pinCodeFragment = new PinCodeFragment();
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.auth_fragments_container,pinCodeFragment)
-                                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                                .addToBackStack(null)
-                                .commit();
-                    }
-                }
-        );
-        Toast.makeText(this, R.string.pinCode_hint_text, Toast.LENGTH_SHORT).show();
-
     }
 }

@@ -65,37 +65,23 @@ public class ChatActivity extends AppCompatActivity {
          * initialise the firebase features
          */
 
-        mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance();
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
-        // get the current user
-        FirebaseUser user = mAuth.getCurrentUser();
+        /**
+         * get the current user
+         */
+
 
         /**
          * if the user is not authenticated we redirect him to
          * the authentication activity
          */
-        if(user == null){
-            // non authenticated
-            Intent intent =new Intent(ChatActivity.this,AuthActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
-            return;
-        }
+
 
         /**
          * get the string identifier of the user, if the user had signed in
          * with his phone number, we use the phone number as an identifier
          */
-        final String email = user.getEmail();
-        if(email.length()>0){
-            mUser = new Message.User(user.getUid(),user.getEmail().split("@")[0]);
-        }else {
-            Toast.makeText(this, user.getPhoneNumber(), Toast.LENGTH_SHORT).show();
-            mUser = new Message.User(user.getUid(),user.getPhoneNumber());
-        }
+
 
         // set up the app toolbar
         mToolbar = findViewById(R.id.toolbar);
@@ -116,13 +102,7 @@ public class ChatActivity extends AppCompatActivity {
                 new MessageInput.InputListener() {
                     @Override
                     public boolean onSubmit(CharSequence input) {
-                        DatabaseReference reference = mDatabase.getReference("messages").push();
-                        Message message = new Message(reference.getKey(),input.toString(),mUser);
-                        reference.setValue(message);
 
-                        Bundle params = new Bundle();
-                        params.putString(FirebaseAnalytics.Param.CONTENT_TYPE,"text_message");
-                        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SHARE, params);
 
                         return true;
                     }
@@ -154,48 +134,7 @@ public class ChatActivity extends AppCompatActivity {
          *   1 - we update the message in the list view
          *
          */
-        mDatabase.getReference("messages").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                /**
-                 * first, this function is triggered for each child inside the reference
-                 */
-                Message message = dataSnapshot.getValue(Message.class);
-                mMessagesAdapter.addToStart(message,true);
-            }
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                /**
-                 * Listen for changes to the items in a list. This event fired any time a child node is modified,
-                 * including any modifications to descendants of the child node.
-                 * The DataSnapshot passed to the event listener contains the updated data for the child.
-                 */
-                Message message = dataSnapshot.getValue(Message.class);
-                mMessagesAdapter.update(message);
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                /**
-                 * Listen for items being removed from a list.
-                 * The DataSnapshot passed to the event callback contains the data for the removed child.
-                 */
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                /**
-                 * Listen for changes to the order of items in an ordered list.
-                 * This event is triggered whenever the onChildChanged() callback is triggered
-                 */
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 
     // creating the option menu of the chat activity
@@ -214,8 +153,6 @@ public class ChatActivity extends AppCompatActivity {
                      * log out the user
                      * and deleting the chat activity from the back stack
                      */
-                    mAuth.signOut();
-                    finish();
                     break;
                 default:
                     return false;
