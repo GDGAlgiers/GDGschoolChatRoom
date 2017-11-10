@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">GDG chat</string>
+    <string name="chat_room">Chat room</string>
+    <string name="not_registered_remarque">Not registered yet, sign up!</string>
+    <string name="Continue_with_phoneNumber">Continue with phone number</string>
+    <string name="signIn_text">Sign in</string>
+    <string name="signUp_text">Sign up</string>
+    <string name="verify_text">Verify</string>
+    <string name="send_pinCode">Send</string>
+    <string name="username_hint_text">username</string>
+    <string name="email_hint_text">email</string>
+    <string name="phoneNumber_hint_text">phone number</string>
+    <string name="pinCode_hint_text">PinCode</string>
+    <string name="invalid_input">Invalid inputs</string>
+    <string name="invalid_verification_number">Invalid verification number</string>
+    <string name="password_hint_text">password</string>
+    <string name="signIn_choice">OR</string>
+    <string name="pinCode_timeOut_mess">You can try sending a pinCode request after 1 minute</string>
+    <string name="message_hint_text">What\'s in your mind</string>
+    <string name="algeria_phone_code">+213</string>
+    <string name="my_phone_number">+213558852039</string>
+    <string name="log_out_text">Log out</string>
+</resources>
