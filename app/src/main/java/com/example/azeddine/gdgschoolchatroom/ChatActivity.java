@@ -90,7 +90,9 @@ public class ChatActivity extends AppCompatActivity {
          * with his phone number, we use the phone number as an identifier
          */
         final String email = user.getEmail();
-        if(email.length()>0){
+
+        // now comes the power of Kotlin programming language over Java
+        if(email != null){
             mUser = new Message.User(user.getUid(),user.getEmail().split("@")[0]);
         }else {
             Toast.makeText(this, user.getPhoneNumber(), Toast.LENGTH_SHORT).show();
